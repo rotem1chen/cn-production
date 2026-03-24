@@ -80,7 +80,6 @@
     updateLoader(100);
     setTimeout(() => {
       loader.classList.add("hidden");
-      lenis.start();
       initScrollSystems();
     }, 400);
   }
@@ -110,20 +109,14 @@
   }
 
   /* ----------------------------------------
-     3. Lenis Smooth Scroll
+     3. Lenis Smooth Scroll + GSAP Setup
      ---------------------------------------- */
-  const lenis = new Lenis({
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    smoothWheel: true,
-  });
+  gsap.registerPlugin(ScrollTrigger);
 
+  const lenis = new Lenis({ lerp: 0.1, smoothWheel: true });
   lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add((time) => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);
-
-  // Stop scroll until loaded
-  lenis.stop();
 
   /* ----------------------------------------
      4. Hero Animation
@@ -175,8 +168,6 @@
      5. All Scroll-Driven Systems
      ---------------------------------------- */
   function initScrollSystems() {
-    gsap.registerPlugin(ScrollTrigger);
-
     initHeroTransition();
     initScrollDrivenFrames();
     initSections();
@@ -496,56 +487,101 @@
   /* ----------------------------------------
      7. Portfolio Tabs & Carousel
      ---------------------------------------- */
-  function initPortfolio() {
-    const tabs = document.querySelectorAll(".tab");
-    const carousels = document.querySelectorAll(".carousel");
+  const _v = typeof DATA_VERSION !== "undefined" ? DATA_VERSION : Date.now();
 
-    // Tab switching — show/hide carousels
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        const category = tab.dataset.category;
+  function buildCard(item) {
+    const isVert = item.type === "vertical";
+    const thumb = item.thumb
+      ? `<img src="${item.thumb}" alt="${item.title}" loading="lazy">`
+      : `<div class="project-placeholder">${item.title.charAt(0)}</div>`;
+    const href = item.link || "#";
+    return `<a href="${href}" ${item.link ? 'target="_blank"' : ""} class="project-card${isVert ? " vertical" : ""}">
+      <div class="project-thumb">${thumb}</div>
+      <div class="project-info"><h3 class="project-title">${item.title}</h3></div>
+    </a>`;
+  }
 
-        tabs.forEach((t) => t.classList.remove("active"));
-        tab.classList.add("active");
+  function buildCarousel(category, items, isFirst) {
+    const arrowSvgL = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
+    const arrowSvgR = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    return `<div class="carousel" data-category="${category}" style="${isFirst ? "" : "display:none;"}">
+      <button class="carousel-arrow arrow-left" aria-label="Previous">${arrowSvgL}</button>
+      <div class="carousel-track">${items.map(buildCard).join("")}</div>
+      <button class="carousel-arrow arrow-right" aria-label="Next">${arrowSvgR}</button>
+    </div>`;
+  }
 
-        carousels.forEach((c) => {
-          if (c.dataset.category === category) {
-            c.style.display = "block";
-          } else {
-            c.style.display = "none";
-          }
+  function buildClientCard(client) {
+    if (!client.name) return "";
+    const igSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>';
+    const webSvg = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>';
+    const logoEl = client.logo
+      ? `<img src="${client.logo}" alt="${client.name}" class="client-logo-img"${client.logoStyle ? ` style="${client.logoStyle}"` : ""}>`
+      : `<div class="client-logo-placeholder">${client.name.charAt(0)}</div>`;
+    const links = [];
+    if (client.instagram) links.push(`<a href="${client.instagram}" target="_blank" class="client-link-icon" title="Instagram">${igSvg}</a>`);
+    if (client.website) links.push(`<a href="${client.website}" target="_blank" class="client-link-icon" title="Website">${webSvg}</a>`);
+    return `<div class="client-card">
+      ${logoEl}
+      <span class="client-name">${client.name}</span>
+      <span class="client-links">${links.join("")}</span>
+    </div>`;
+  }
+
+  async function initPortfolio() {
+    try {
+      const [portfolioRes, clientsRes] = await Promise.all([
+        fetch(`data/portfolio.json?v=${_v}`),
+        fetch(`data/clients.json?v=${_v}`)
+      ]);
+      const portfolio = await portfolioRes.json();
+      const clients = await clientsRes.json();
+
+      // Render portfolio carousels
+      const container = document.getElementById("portfolio-carousels");
+      if (container) {
+        const categories = Object.keys(portfolio);
+        container.innerHTML = categories.map((cat, i) => buildCarousel(cat, portfolio[cat], i === 0)).join("");
+      }
+
+      // Render clients
+      const clientsGrid = document.getElementById("clients-grid");
+      if (clientsGrid) {
+        clientsGrid.innerHTML = clients.filter(c => c.name).map(buildClientCard).join("");
+      }
+
+      // Wire up tabs
+      const tabs = document.querySelectorAll(".tab");
+      const carousels = document.querySelectorAll(".carousel");
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const category = tab.dataset.category;
+          tabs.forEach((t) => t.classList.remove("active"));
+          tab.classList.add("active");
+          carousels.forEach((c) => {
+            c.style.display = c.dataset.category === category ? "block" : "none";
+          });
         });
       });
-    });
 
-    // Carousel arrow navigation
-    carousels.forEach((carousel) => {
-      const track = carousel.querySelector(".carousel-track");
-      const leftBtn = carousel.querySelector(".arrow-left");
-      const rightBtn = carousel.querySelector(".arrow-right");
-
-      const getCardWidth = () => {
-        const card = track.querySelector(".project-card");
-        if (!card) return 0;
-        return card.offsetWidth + 24; // card width + gap
-      };
-
-      leftBtn.addEventListener("click", () => {
-        track.scrollBy({ left: -getCardWidth(), behavior: "smooth" });
+      // Carousel arrow navigation
+      carousels.forEach((carousel) => {
+        const track = carousel.querySelector(".carousel-track");
+        const leftBtn = carousel.querySelector(".arrow-left");
+        const rightBtn = carousel.querySelector(".arrow-right");
+        const getCardWidth = () => {
+          const card = track.querySelector(".project-card");
+          return card ? card.offsetWidth + 24 : 0;
+        };
+        leftBtn.addEventListener("click", () => track.scrollBy({ left: -getCardWidth(), behavior: "smooth" }));
+        rightBtn.addEventListener("click", () => track.scrollBy({ left: getCardWidth(), behavior: "smooth" }));
+        track.style.overflowX = "auto";
+        track.style.scrollbarWidth = "none";
+        track.style.msOverflowStyle = "none";
       });
-
-      rightBtn.addEventListener("click", () => {
-        track.scrollBy({ left: getCardWidth(), behavior: "smooth" });
-      });
-    });
-
-    // Enable scroll on track (for touch/drag)
-    carousels.forEach((carousel) => {
-      const track = carousel.querySelector(".carousel-track");
-      track.style.overflowX = "auto";
-      track.style.scrollbarWidth = "none";
-      track.style.msOverflowStyle = "none";
-    });
+    } catch (err) {
+      console.error("Failed to load portfolio/clients data:", err);
+    }
   }
 
   initPortfolio();

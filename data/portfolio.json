@@ -1,0 +1,26 @@
+{
+  "restaurants": [
+    { "title": "Restaurant Project 1", "type": "vertical", "thumb": "", "link": "" },
+    { "title": "Restaurant Project 2", "type": "vertical", "thumb": "", "link": "" },
+    { "title": "Restaurant Project 3", "type": "vertical", "thumb": "", "link": "" },
+    { "title": "Restaurant Project 4", "type": "vertical", "thumb": "", "link": "" },
+    { "title": "Restaurant Project 5", "type": "vertical", "thumb": "", "link": "" },
+    { "title": "Restaurant Project 6", "type": "vertical", "thumb": "", "link": "" }
+  ],
+  "music": [
+    { "title": "Music Video 1", "type": "horizontal", "thumb": "", "link": "" },
+    { "title": "Music Video 2", "type": "horizontal", "thumb": "", "link": "" },
+    { "title": "Music Video 3", "type": "horizontal", "thumb": "", "link": "" },
+    { "title": "Music Video 4", "type": "horizontal", "thumb": "", "link": "" },
+    { "title": "Music Video 5", "type": "horizontal", "thumb": "", "link": "" },
+    { "title": "Music Video 6", "type": "horizontal", "thumb": "", "link": "" }
+  ],
+  "others": [
+    { "title": "Other Project 1", "type": "vertical", "thumb": "", "link": "" },
+    { "title": "Other Project 2", "type": "horizontal", "thumb": "", "link": "" },
+    { "title": "Other Project 3", "type": "vertical", "thumb": "", "link": "" },
+    { "title": "Other Project 4", "type": "vertical", "thumb": "", "link": "" },
+    { "title": "Other Project 5", "type": "vertical", "thumb": "", "link": "" },
+    { "title": "Other Project 6", "type": "horizontal", "thumb": "", "link": "" }
+  ]
+}
