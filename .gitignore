@@ -1,0 +1,16 @@
+# Video files (too large for git)
+*.mp4
+
+# Extracted frames (can be regenerated)
+frames/
+
+# Claude config
+.claude/
+memory/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Skill files
+SKILL*.md
