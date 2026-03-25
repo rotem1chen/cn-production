@@ -12,8 +12,11 @@
     { "title": "Ohana", "type": "horizontal", "thumb": "assets/thumbs/ohana.jpg", "video": "assets/videos/ohana.mp4", "link": "" }
   ],
   "others": [],
-  "photos": [
-    { "thumb": "assets/photos/untitled-8928.jpg", "type": "vertical" },
-    { "thumb": "assets/photos/untitled-9024.jpg", "type": "horizontal" }
-  ]
+  "photos": {
+    "music": [
+      { "thumb": "assets/photos/untitled-8928.jpg", "type": "vertical" },
+      { "thumb": "assets/photos/untitled-9024.jpg", "type": "horizontal" }
+    ],
+    "restaurants": []
+  }
 }

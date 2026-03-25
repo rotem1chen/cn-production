@@ -714,7 +714,7 @@ ul {
   overflow-x: auto;
   scroll-behavior: smooth;
   padding: 0.5rem 2rem 0.5rem 0;
-  align-items: flex-start;
+  align-items: center;
   scroll-snap-type: x mandatory;
 }
 
@@ -820,8 +820,9 @@ ul {
 
 /* Photos Button Card */
 .photos-btn {
-  min-width: 200px !important;
-  max-width: 200px !important;
+  min-width: 150px !important;
+  max-width: 150px !important;
+  align-self: center;
 }
 
 .photos-thumb {
@@ -832,6 +833,8 @@ ul {
   gap: 0.8rem;
   background: rgba(245, 197, 24, 0.05);
   border: 2px dashed rgba(245, 197, 24, 0.3);
+  height: auto !important;
+  padding-bottom: 0 !important;
   aspect-ratio: 1/1;
   transition: background 0.3s ease, border-color 0.3s ease;
 }
@@ -850,7 +853,7 @@ ul {
 }
 
 /* Photo Gallery Overlay */
-#photo-gallery {
+.photo-gallery {
   position: fixed;
   top: 0;
   left: 0;
@@ -865,7 +868,7 @@ ul {
   transition: opacity 0.4s ease;
 }
 
-#photo-gallery.active {
+.photo-gallery.active {
   opacity: 1;
   pointer-events: auto;
 }

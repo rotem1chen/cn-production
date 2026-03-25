@@ -527,9 +527,10 @@
   function buildCarousel(category, items, isFirst, hasPhotos) {
     const arrowSvgL = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
     const arrowSvgR = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-    const photosBtn = hasPhotos ? `<div class="project-card photos-btn" id="open-photo-gallery">
+    const cameraIcon = '<svg width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M15 12l2-4h14l2 4h7a3 3 0 0 1 3 3v22a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V15a3 3 0 0 1 3-3h7z" stroke="#F5C518" stroke-width="2"/><circle cx="24" cy="25" r="8" stroke="#F5C518" stroke-width="2"/><circle cx="24" cy="25" r="4" stroke="#F5C518" stroke-width="1.5"/></svg>';
+    const photosBtn = hasPhotos ? `<div class="project-card photos-btn" data-gallery="${category}">
       <div class="project-thumb photos-thumb">
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="10" width="36" height="28" rx="4" stroke="#F5C518" stroke-width="2"/><circle cx="18" cy="22" r="4" stroke="#F5C518" stroke-width="2"/><path d="M6 34l10-10 8 8 6-6 12 12" stroke="#F5C518" stroke-width="2" fill="none"/></svg>
+        ${cameraIcon}
         <span class="photos-label">PHOTOS</span>
       </div>
     </div>` : "";
@@ -568,21 +569,27 @@
 
       // Render portfolio carousels
       const container = document.getElementById("portfolio-carousels");
-      const photos = portfolio.photos || [];
+      const photosData = portfolio.photos || {};
       if (container) {
         const categories = Object.keys(portfolio).filter(c => c !== "photos");
-        container.innerHTML = categories.map((cat, i) => buildCarousel(cat, portfolio[cat], i === 0, cat === "music" && photos.length > 0)).join("");
+        container.innerHTML = categories.map((cat, i) => {
+          const hasPhotosCat = cat === "music" || cat === "restaurants";
+          return buildCarousel(cat, portfolio[cat], i === 0, hasPhotosCat);
+        }).join("");
       }
 
-      // Build photo gallery overlay
-      if (photos.length > 0) {
+      // Build photo gallery overlays per category
+      ["music", "restaurants"].forEach((cat) => {
+        const photos = (photosData[cat]) || [];
+
         const gallery = document.createElement("div");
-        gallery.id = "photo-gallery";
+        gallery.className = "photo-gallery";
+        gallery.dataset.galleryFor = cat;
         gallery.innerHTML = `<div class="gallery-backdrop"></div>
           <div class="gallery-content">
             <button class="gallery-close">&times;</button>
-            <h2 class="gallery-title">PHOTOS</h2>
-            <div class="gallery-grid">${photos.map(p => `<div class="gallery-item${p.type === "vertical" ? " vertical" : ""}"><img src="${p.thumb}" alt="" loading="lazy"></div>`).join("")}</div>
+            <h2 class="gallery-title">${cat.toUpperCase()} PHOTOS</h2>
+            <div class="gallery-grid">${photos.length > 0 ? photos.map(p => `<div class="gallery-item${p.type === "vertical" ? " vertical" : ""}"><img src="${p.thumb}" alt="" loading="lazy"></div>`).join("") : '<p style="color: var(--gold); opacity: 0.5; grid-column: 1/-1; text-align: center;">Coming soon...</p>'}</div>
           </div>`;
         document.body.appendChild(gallery);
 
@@ -590,15 +597,6 @@
         gallery.querySelector(".gallery-backdrop").addEventListener("click", closeGallery);
         gallery.querySelector(".gallery-close").addEventListener("click", closeGallery);
         document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeGallery(); });
-
-        // Open gallery from photos button
-        setTimeout(() => {
-          const openBtn = document.getElementById("open-photo-gallery");
-          if (openBtn) {
-            openBtn.style.cursor = "pointer";
-            openBtn.addEventListener("click", () => gallery.classList.add("active"));
-          }
-        }, 100);
 
         // Click gallery photo for fullscreen
         gallery.querySelectorAll(".gallery-item").forEach((item) => {
@@ -612,7 +610,19 @@
             modal.classList.add("active");
           });
         });
-      }
+      });
+
+      // Wire up all photos buttons to their galleries
+      setTimeout(() => {
+        document.querySelectorAll(".photos-btn[data-gallery]").forEach((btn) => {
+          btn.style.cursor = "pointer";
+          btn.addEventListener("click", () => {
+            const cat = btn.dataset.gallery;
+            const gallery = document.querySelector(`.photo-gallery[data-gallery-for="${cat}"]`);
+            if (gallery) gallery.classList.add("active");
+          });
+        });
+      }, 100);
 
       // Render clients
       const clientsGrid = document.getElementById("clients-grid");
