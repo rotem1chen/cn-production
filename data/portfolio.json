@@ -1,26 +1,19 @@
 {
   "restaurants": [
-    { "title": "Restaurant Project 1", "type": "vertical", "thumb": "", "link": "" },
-    { "title": "Restaurant Project 2", "type": "vertical", "thumb": "", "link": "" },
-    { "title": "Restaurant Project 3", "type": "vertical", "thumb": "", "link": "" },
-    { "title": "Restaurant Project 4", "type": "vertical", "thumb": "", "link": "" },
-    { "title": "Restaurant Project 5", "type": "vertical", "thumb": "", "link": "" },
-    { "title": "Restaurant Project 6", "type": "vertical", "thumb": "", "link": "" }
+    { "title": "", "type": "vertical", "thumb": "assets/thumbs/another-one.jpg", "video": "assets/videos/another one.mov", "link": "" },
+    { "title": "", "type": "vertical", "thumb": "assets/thumbs/fub-5.jpg", "video": "assets/videos/fub 5.mp4", "link": "" },
+    { "title": "", "type": "vertical", "thumb": "assets/thumbs/finel.jpg", "video": "assets/videos/FINEL.mov", "link": "" },
+    { "title": "", "type": "vertical", "thumb": "assets/thumbs/nona-fub-2.jpg", "video": "assets/videos/nona fub 2.mp4", "link": "" },
+    { "title": "", "type": "vertical", "thumb": "assets/thumbs/nona-fub-4.jpg", "video": "assets/videos/nona fub 4.mp4", "link": "" }
   ],
   "music": [
-    { "title": "Music Video 1", "type": "horizontal", "thumb": "", "link": "" },
-    { "title": "Music Video 2", "type": "horizontal", "thumb": "", "link": "" },
-    { "title": "Music Video 3", "type": "horizontal", "thumb": "", "link": "" },
-    { "title": "Music Video 4", "type": "horizontal", "thumb": "", "link": "" },
-    { "title": "Music Video 5", "type": "horizontal", "thumb": "", "link": "" },
-    { "title": "Music Video 6", "type": "horizontal", "thumb": "", "link": "" }
+    { "title": "September - Sid", "type": "horizontal", "thumb": "", "video": "https://www.youtube.com/watch?v=MTNT-G1SP5U", "link": "" },
+    { "title": "Liad Mair", "type": "horizontal", "thumb": "assets/thumbs/liad-mair.jpg", "video": "assets/videos/liad mair video.mp4", "link": "" },
+    { "title": "Ohana", "type": "horizontal", "thumb": "assets/thumbs/ohana.jpg", "video": "assets/videos/ohana.mp4", "link": "" }
   ],
-  "others": [
-    { "title": "Other Project 1", "type": "vertical", "thumb": "", "link": "" },
-    { "title": "Other Project 2", "type": "horizontal", "thumb": "", "link": "" },
-    { "title": "Other Project 3", "type": "vertical", "thumb": "", "link": "" },
-    { "title": "Other Project 4", "type": "vertical", "thumb": "", "link": "" },
-    { "title": "Other Project 5", "type": "vertical", "thumb": "", "link": "" },
-    { "title": "Other Project 6", "type": "horizontal", "thumb": "", "link": "" }
+  "others": [],
+  "photos": [
+    { "thumb": "assets/photos/untitled-8928.jpg", "type": "vertical" },
+    { "thumb": "assets/photos/untitled-9024.jpg", "type": "horizontal" }
   ]
 }

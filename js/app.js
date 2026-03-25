@@ -215,6 +215,21 @@
      ---------------------------------------- */
   function initScrollDrivenFrames() {
     const VIDEO_END = 0.80; // video finishes at 80% scroll (before CTA)
+    let pendingFrame = null;
+    let rafId = null;
+
+    function scheduleFrame(index) {
+      pendingFrame = index;
+      if (!rafId) {
+        rafId = requestAnimationFrame(() => {
+          if (pendingFrame !== null && pendingFrame !== currentFrame) {
+            drawFrame(pendingFrame);
+          }
+          rafId = null;
+          pendingFrame = null;
+        });
+      }
+    }
 
     ScrollTrigger.create({
       trigger: scrollContainer,
@@ -227,9 +242,7 @@
           TOTAL_FRAMES - 1,
           Math.floor(videoProgress * TOTAL_FRAMES)
         );
-        if (frameIndex !== currentFrame) {
-          drawFrame(frameIndex);
-        }
+        scheduleFrame(frameIndex);
       },
     });
   }
@@ -254,20 +267,19 @@
       switch (type) {
         case "clip-reveal":
           tl.from(children, {
-            clipPath: "inset(100% 0 0 0)",
             opacity: 0,
-            stagger: 0.15,
-            duration: 1.2,
-            ease: "power4.inOut",
+            stagger: 0,
+            duration: 0.6,
+            ease: "power2.out",
           });
           break;
         case "slide-left":
           tl.from(children, {
-            x: -80,
+            x: -40,
             opacity: 0,
-            stagger: 0.14,
-            duration: 0.9,
-            ease: "power3.out",
+            stagger: 0,
+            duration: 0.5,
+            ease: "power2.out",
           });
           break;
         case "slide-right":
@@ -489,24 +501,41 @@
      ---------------------------------------- */
   const _v = typeof DATA_VERSION !== "undefined" ? DATA_VERSION : Date.now();
 
-  function buildCard(item) {
-    const isVert = item.type === "vertical";
-    const thumb = item.thumb
-      ? `<img src="${item.thumb}" alt="${item.title}" loading="lazy">`
-      : `<div class="project-placeholder">${item.title.charAt(0)}</div>`;
-    const href = item.link || "#";
-    return `<a href="${href}" ${item.link ? 'target="_blank"' : ""} class="project-card${isVert ? " vertical" : ""}">
-      <div class="project-thumb">${thumb}</div>
-      <div class="project-info"><h3 class="project-title">${item.title}</h3></div>
-    </a>`;
+  function getYouTubeId(url) {
+    if (!url) return null;
+    const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([a-zA-Z0-9_-]{11})/);
+    return m ? m[1] : null;
   }
 
-  function buildCarousel(category, items, isFirst) {
+  function buildCard(item) {
+    if (!item.video && !item.thumb) return "";
+    const isVert = item.type === "vertical";
+    const ytId = getYouTubeId(item.video);
+    const thumbSrc = item.thumb
+      ? item.thumb
+      : ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : "";
+    const thumb = thumbSrc
+      ? `<img src="${thumbSrc}" alt="${item.title}" loading="lazy">`
+      : `<div class="project-placeholder">${item.title.charAt(0) || "?"}</div>`;
+    const videoAttr = item.video ? ` data-video="${item.video}"` : "";
+    const playSvg = item.video ? `<div class="play-overlay"><svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="23" stroke="#F5C518" stroke-width="2"/><polygon points="19,14 36,24 19,34" fill="#F5C518"/></svg></div>` : "";
+    return `<div class="project-card${isVert ? " vertical" : ""}"${videoAttr}>
+      <div class="project-thumb">${thumb}${playSvg}</div>
+    </div>`;
+  }
+
+  function buildCarousel(category, items, isFirst, hasPhotos) {
     const arrowSvgL = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>';
     const arrowSvgR = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    const photosBtn = hasPhotos ? `<div class="project-card photos-btn" id="open-photo-gallery">
+      <div class="project-thumb photos-thumb">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="6" y="10" width="36" height="28" rx="4" stroke="#F5C518" stroke-width="2"/><circle cx="18" cy="22" r="4" stroke="#F5C518" stroke-width="2"/><path d="M6 34l10-10 8 8 6-6 12 12" stroke="#F5C518" stroke-width="2" fill="none"/></svg>
+        <span class="photos-label">PHOTOS</span>
+      </div>
+    </div>` : "";
     return `<div class="carousel" data-category="${category}" style="${isFirst ? "" : "display:none;"}">
       <button class="carousel-arrow arrow-left" aria-label="Previous">${arrowSvgL}</button>
-      <div class="carousel-track">${items.map(buildCard).join("")}</div>
+      <div class="carousel-track">${items.map(buildCard).join("")}${photosBtn}</div>
       <button class="carousel-arrow arrow-right" aria-label="Next">${arrowSvgR}</button>
     </div>`;
   }
@@ -539,9 +568,50 @@
 
       // Render portfolio carousels
       const container = document.getElementById("portfolio-carousels");
+      const photos = portfolio.photos || [];
       if (container) {
-        const categories = Object.keys(portfolio);
-        container.innerHTML = categories.map((cat, i) => buildCarousel(cat, portfolio[cat], i === 0)).join("");
+        const categories = Object.keys(portfolio).filter(c => c !== "photos");
+        container.innerHTML = categories.map((cat, i) => buildCarousel(cat, portfolio[cat], i === 0, cat === "music" && photos.length > 0)).join("");
+      }
+
+      // Build photo gallery overlay
+      if (photos.length > 0) {
+        const gallery = document.createElement("div");
+        gallery.id = "photo-gallery";
+        gallery.innerHTML = `<div class="gallery-backdrop"></div>
+          <div class="gallery-content">
+            <button class="gallery-close">&times;</button>
+            <h2 class="gallery-title">PHOTOS</h2>
+            <div class="gallery-grid">${photos.map(p => `<div class="gallery-item${p.type === "vertical" ? " vertical" : ""}"><img src="${p.thumb}" alt="" loading="lazy"></div>`).join("")}</div>
+          </div>`;
+        document.body.appendChild(gallery);
+
+        const closeGallery = () => gallery.classList.remove("active");
+        gallery.querySelector(".gallery-backdrop").addEventListener("click", closeGallery);
+        gallery.querySelector(".gallery-close").addEventListener("click", closeGallery);
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeGallery(); });
+
+        // Open gallery from photos button
+        setTimeout(() => {
+          const openBtn = document.getElementById("open-photo-gallery");
+          if (openBtn) {
+            openBtn.style.cursor = "pointer";
+            openBtn.addEventListener("click", () => gallery.classList.add("active"));
+          }
+        }, 100);
+
+        // Click gallery photo for fullscreen
+        gallery.querySelectorAll(".gallery-item").forEach((item) => {
+          item.style.cursor = "pointer";
+          item.addEventListener("click", () => {
+            const src = item.querySelector("img").src;
+            modalImage.src = src;
+            modalImage.style.display = "block";
+            modalVideo.style.display = "none";
+            modalIframe.style.display = "none";
+            modal.classList.add("active");
+          });
+        });
       }
 
       // Render clients
@@ -579,6 +649,66 @@
         track.style.scrollbarWidth = "none";
         track.style.msOverflowStyle = "none";
       });
+      // Fullscreen video modal (supports local video + YouTube)
+      const modal = document.createElement("div");
+      modal.id = "video-modal";
+      modal.innerHTML = `<div class="modal-backdrop"></div><div class="modal-content"><button class="modal-close">&times;</button><video id="modal-video" controls playsinline></video><iframe id="modal-iframe" frameborder="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe><img id="modal-image" style="display:none; max-width:90vw; max-height:90vh; object-fit:contain;" alt=""></div>`;
+      document.body.appendChild(modal);
+
+      const modalVideo = document.getElementById("modal-video");
+      const modalIframe = document.getElementById("modal-iframe");
+      const modalImage = document.getElementById("modal-image");
+      const closeModal = () => {
+        modal.classList.remove("active");
+        modalVideo.pause();
+        modalVideo.src = "";
+        modalIframe.src = "";
+        modalImage.src = "";
+        modalVideo.style.display = "none";
+        modalIframe.style.display = "none";
+        modalImage.style.display = "none";
+      };
+      modal.querySelector(".modal-backdrop").addEventListener("click", closeModal);
+      modal.querySelector(".modal-close").addEventListener("click", closeModal);
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+      document.querySelectorAll(".project-card[data-video]").forEach((card) => {
+        card.style.cursor = "pointer";
+        card.addEventListener("click", (e) => {
+          e.preventDefault();
+          const src = card.dataset.video;
+          const ytId = getYouTubeId(src);
+          if (ytId) {
+            modalIframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
+            modalIframe.style.display = "block";
+            modalVideo.style.display = "none";
+            modalImage.style.display = "none";
+          } else {
+            modalVideo.src = src;
+            modalVideo.style.display = "block";
+            modalIframe.style.display = "none";
+            modalImage.style.display = "none";
+            modalVideo.play();
+          }
+          modal.classList.add("active");
+        });
+      });
+
+      // Photo cards (no video) — open image fullscreen in modal
+      document.querySelectorAll(".project-card:not([data-video])").forEach((card) => {
+        const thumbImg = card.querySelector(".project-thumb img");
+        if (!thumbImg) return;
+        card.style.cursor = "pointer";
+        card.addEventListener("click", (e) => {
+          e.preventDefault();
+          modalImage.src = thumbImg.getAttribute("src");
+          modalImage.style.display = "block";
+          modalVideo.style.display = "none";
+          modalIframe.style.display = "none";
+          modal.classList.add("active");
+        });
+      });
+
     } catch (err) {
       console.error("Failed to load portfolio/clients data:", err);
     }
@@ -593,7 +723,7 @@
 
   const scrollHint = document.getElementById("scroll-hint-fixed");
 
-  // Show/hide based on intro section visibility
+  // Show/hide based on intro section visibility — synced with 001 section (data-enter="5", data-leave="25")
   ScrollTrigger.create({
     trigger: scrollContainer,
     start: "top top",
@@ -601,7 +731,7 @@
     scrub: true,
     onUpdate: (self) => {
       const p = self.progress;
-      // Skip nav: only during 001 intro
+      // Match 001 section timing exactly
       const enter = 0.05;
       const leave = 0.25;
       const fadeIn = 0.02;

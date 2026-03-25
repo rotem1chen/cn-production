@@ -1,43 +1,36 @@
 [
   {
     "name": "נונע",
-    "logo": "nona.jpg",
+    "logo": "assets/clients/nona.jpg",
     "logoStyle": "",
-    "instagram": "",
+    "instagram": "https://www.instagram.com/nonna_pizzahouse/",
     "website": ""
   },
   {
     "name": "Nvidia Gamla",
-    "logo": "gamla_final_logo (1).svg",
+    "logo": "assets/clients/gamla_final_logo (1).svg",
     "logoStyle": "background: #F5C518; padding: 10px; border-radius: 8px;",
     "instagram": "",
+    "website": "https://www.nvidia.com/en-us/"
+  },
+  {
+    "name": "Raash",
+    "logo": "assets/clients/raash.svg",
+    "logoStyle": "background: #F5C518; padding: 10px; border-radius: 8px;",
+    "instagram": "https://instagram.com/raash_industries/",
+    "website": "https://raashstore.com/"
+  },
+  {
+    "name": "Mala",
+    "logo": "assets/clients/mala.svg",
+    "logoStyle": "background: #F5C518; padding: 10px; border-radius: 8px;",
+    "instagram": "https://www.instagram.com/mala.rooftop/?hl=he",
     "website": ""
   },
   {
-    "name": "",
-    "logo": "",
-    "logoStyle": "",
-    "instagram": "",
-    "website": ""
-  },
-  {
-    "name": "",
-    "logo": "",
-    "logoStyle": "",
-    "instagram": "",
-    "website": ""
-  },
-  {
-    "name": "",
-    "logo": "",
-    "logoStyle": "",
-    "instagram": "",
-    "website": ""
-  },
-  {
-    "name": "",
-    "logo": "",
-    "logoStyle": "",
+    "name": "Balcony",
+    "logo": "assets/clients/Group-40734.svg",
+    "logoStyle": "background: #F5C518; padding: 10px; border-radius: 8px;",
     "instagram": "",
     "website": ""
   }

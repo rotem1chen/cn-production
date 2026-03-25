@@ -1,7 +1,6 @@
-# Video files (too large for git)
-*.mp4
-
-# Extracted frames (can be regenerated)
+# Videos & extracted frames
+assets/resources/
+assets/videos/
 frames/
 
 # Claude config
