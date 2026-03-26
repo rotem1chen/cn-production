@@ -2,14 +2,23 @@
    Rotem — Videographer Portfolio
    ======================================== */
 
+@font-face {
+  font-family: 'GolfWang';
+  src: url('../assets/fonts/GolfWang-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --black: #000000;
   --gold: #F5C518;
   --gold-dark: #C4A000;
   --gold-muted: #8B7D3C;
   --off-white: #F0EDE8;
-  --font-display: 'Jost', sans-serif;
+  --font-display: 'GolfWang', 'Jost', sans-serif;
   --font-body: 'Jost', sans-serif;
+  --font-golf: 'GolfWang', sans-serif;
 }
 
 /* ---- Reset ---- */
@@ -135,7 +144,7 @@ ul {
 }
 
 .hero-name {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: clamp(0.8rem, 1.4vw, 1.2rem);
   font-weight: 600;
   letter-spacing: 0.5em;
@@ -583,7 +592,7 @@ ul {
   padding: 1.1rem 3.5rem;
   border: 1px solid var(--gold);
   color: var(--gold);
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.25em;
@@ -665,7 +674,7 @@ ul {
 .tab {
   background: none;
   border: none;
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: 0.85rem;
   font-weight: 400;
   letter-spacing: 0.15em;
