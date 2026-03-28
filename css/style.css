@@ -3,8 +3,8 @@
    ======================================== */
 
 @font-face {
-  font-family: 'GolfWang';
-  src: url('../assets/fonts/GolfWang-Regular.woff2') format('woff2');
+  font-family: 'Milker';
+  src: url('../assets/fonts/Milker.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -16,9 +16,8 @@
   --gold-dark: #C4A000;
   --gold-muted: #8B7D3C;
   --off-white: #F0EDE8;
-  --font-display: 'GolfWang', 'Jost', sans-serif;
+  --font-display: 'Milker', 'Jost', sans-serif;
   --font-body: 'Jost', sans-serif;
-  --font-golf: 'GolfWang', sans-serif;
 }
 
 /* ---- Reset ---- */
@@ -145,11 +144,14 @@ ul {
 
 .hero-name {
   font-family: var(--font-display);
-  font-size: clamp(0.8rem, 1.4vw, 1.2rem);
-  font-weight: 600;
-  letter-spacing: 0.5em;
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-weight: 400;
+  letter-spacing: 0.15em;
   color: var(--gold);
   margin-bottom: 0.6rem;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .hero-subtitle {
@@ -391,12 +393,16 @@ ul {
 
 .section-heading {
   font-family: var(--font-display);
-  font-size: clamp(2.5rem, 4.5vw, 4.5rem);
+  font-size: clamp(1.8rem, 3.5vw, 3.5rem);
   font-weight: 800;
   color: var(--gold);
   line-height: 1.0;
   margin-bottom: 1.5rem;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 .section-body {
@@ -584,6 +590,7 @@ ul {
   font-size: clamp(3rem, 6vw, 6rem);
   line-height: 0.95;
   margin-bottom: 1.5rem;
+  letter-spacing: 0.05em;
 }
 
 .cta-button {
@@ -593,7 +600,7 @@ ul {
   border: 1px solid var(--gold);
   color: var(--gold);
   font-family: var(--font-display);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: 0.25em;
   text-transform: uppercase;
@@ -661,6 +668,7 @@ ul {
   color: var(--gold);
   line-height: 1.0;
   margin-bottom: 2.5rem;
+  letter-spacing: 0.05em;
 }
 
 /* Tabs */
