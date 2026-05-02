@@ -21,9 +21,6 @@
   const videoWrap = document.getElementById("video-wrap");
   const hero = document.getElementById("hero");
   const scrollContainer = document.getElementById("scroll-container");
-  const loader = document.getElementById("loader");
-  const loaderBar = document.getElementById("loader-bar");
-  const loaderPercent = document.getElementById("loader-percent");
   const darkOverlay = document.getElementById("dark-overlay");
   const marqueeWrap = document.getElementById("marquee-wrap");
   const marqueeText = document.getElementById("marquee-text");
@@ -41,47 +38,37 @@
   }
 
   function preloadFrames() {
+    let scrollInitialized = false;
     for (let i = 0; i < TOTAL_FRAMES; i++) {
       const img = new Image();
       img.src = frameSrc(i);
       img.onload = () => {
         loadedCount++;
-        const percent = Math.round((loadedCount / TOTAL_FRAMES) * 100);
-        updateLoader(percent);
 
-        // Set canvas size from first loaded frame
+        // Set canvas size from first loaded frame and start scroll system immediately
         if (loadedCount === 1) {
           canvas.width = img.naturalWidth;
           canvas.height = img.naturalHeight;
           drawFrame(0);
-        }
-
-        if (loadedCount === TOTAL_FRAMES) {
-          onAllFramesLoaded();
+          if (!scrollInitialized) {
+            scrollInitialized = true;
+            initScrollSystems();
+          }
         }
       };
       img.onerror = () => {
         loadedCount++;
-        if (loadedCount === TOTAL_FRAMES) {
-          onAllFramesLoaded();
-        }
       };
       frames[i] = img;
     }
   }
 
   function updateLoader(percent) {
-    const p = Math.min(percent, 100);
-    loaderBar.style.width = p + "%";
-    loaderPercent.textContent = p + "%";
+    // Loader removed — no-op
   }
 
   function onAllFramesLoaded() {
-    updateLoader(100);
-    setTimeout(() => {
-      loader.classList.add("hidden");
-      initScrollSystems();
-    }, 400);
+    initScrollSystems();
   }
 
   /* ----------------------------------------
